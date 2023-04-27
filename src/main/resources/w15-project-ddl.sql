@@ -1,3 +1,9 @@
+drop TABLE if exists opinion;
+drop TABLE if exists purchase;
+drop TABLE if exists product;
+drop TABLE if exists producer;
+drop TABLE if exists customer;
+
 create TABLE customer(
     id                  SERIAL          NOT NULL,
     user_name           VARCHAR(64)     NOT NULL,
