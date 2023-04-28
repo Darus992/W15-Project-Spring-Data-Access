@@ -3,6 +3,9 @@ package pl.zajavka.infrastructure.database;
 import org.springframework.stereotype.Component;
 import pl.zajavka.domain.*;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -39,5 +42,18 @@ public class DatabaseMapper {
         "quantity",purchase.getQuantity(),
         "date_time",DATABASE_DATE_FORMAT.format(purchase.getDateTime())
         );
+    }
+
+    @SuppressWarnings("unused")
+    public Customer mapCustomer(ResultSet resultSet, int rowNum) throws SQLException {
+        return Customer.builder()
+                .id(resultSet.getLong("ID"))
+                .userName(resultSet.getString("user_name"))
+                .email(resultSet.getString("email"))
+                .name(resultSet.getString("name"))
+                .surname(resultSet.getString("surname"))
+                .dateOfBirth(LocalDate.parse(resultSet.getString("date_of_birth")))
+                .telephoneNumber(resultSet.getString("telephone_number"))
+                .build();
     }
 }
