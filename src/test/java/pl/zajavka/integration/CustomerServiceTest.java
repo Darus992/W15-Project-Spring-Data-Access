@@ -41,13 +41,22 @@ public class CustomerServiceTest {
         final Producer producer = producerService.create(StoreFixtures.someProducer());
         final Product product1 = productService.create(StoreFixtures.someProduct1(producer));
         final Product product2 = productService.create(StoreFixtures.someProduct2(producer));
-        final Purchase purchase1 = purchaseService.create(StoreFixtures.somePurchase(customer, product1)
-                .withQuantity(1));
-        final Purchase purchase2 = purchaseService.create(StoreFixtures.somePurchase(customer, product2)
-                .withQuantity(3));
-        final Opinion opinion = opinionService.create(StoreFixtures.someOpinion(customer, product1));
+
+        purchaseService.create(StoreFixtures.somePurchase(customer, product1).withQuantity(1));
+        purchaseService.create(StoreFixtures.somePurchase(customer, product2).withQuantity(3));
+        opinionService.create(StoreFixtures.someOpinion(customer, product1));
 
         Assertions.assertEquals(customer, customerService.find(customer.getEmail()));
+
+        //  when
+        customerService.remove(customer.getEmail());
+
+        //  then
+        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> customerService.find(customer.getEmail()));
+        Assertions.assertEquals("Customer with email: [%s] is missing".formatted(customer.getEmail()), exception.getMessage());
+
+        Assertions.assertTrue(purchaseService.findAll(customer.getEmail()).isEmpty());
+        Assertions.assertTrue(opinionService.findAll(customer.getEmail()).isEmpty());
     }
 
     @Test
