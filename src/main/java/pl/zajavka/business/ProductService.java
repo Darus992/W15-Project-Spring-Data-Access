@@ -3,7 +3,10 @@ package pl.zajavka.business;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.zajavka.domain.Opinion;
 import pl.zajavka.domain.Product;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -19,5 +22,9 @@ public class ProductService {
     @Transactional
     public void removeAll(){
         productRepository.removeAll();
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll();
     }
 }

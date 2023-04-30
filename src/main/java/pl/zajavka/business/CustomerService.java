@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.zajavka.domain.Customer;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -46,5 +47,9 @@ public class CustomerService {
 
     private boolean isOlderThan40(Customer existingCustomer) {
         return LocalDate.now().getYear() - existingCustomer.getDateOfBirth().getYear() > 40;
+    }
+
+    public List<Customer> findAll() {
+        return customerRepository.findAll();
     }
 }

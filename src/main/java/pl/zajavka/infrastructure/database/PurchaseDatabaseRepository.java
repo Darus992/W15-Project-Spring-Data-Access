@@ -3,8 +3,6 @@ package pl.zajavka.infrastructure.database;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -21,6 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class PurchaseDatabaseRepository implements PurchaseRepository {
 
+    private static final String SELECT_ALL = "SELECT * FROM PURCHASE";
     private static final String DELETE_ALL = "DELETE FROM PURCHASE WHERE 1=1";
     private static final String DELETE_ALL_WHERE_CUSTOMER_EMAIL =
             "DELETE FROM PURCHASE WHERE CUSTOMER_ID IN (SELECT ID FROM CUSTOMER WHERE EMAIL = :email)";
@@ -62,6 +61,12 @@ public class PurchaseDatabaseRepository implements PurchaseRepository {
     public void remove(String email) {
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
         jdbcTemplate.update(DELETE_ALL_WHERE_CUSTOMER_EMAIL, Map.of("email", email));
+    }
+
+    @Override
+    public List<Purchase> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapPurchase);
     }
 
     @Override

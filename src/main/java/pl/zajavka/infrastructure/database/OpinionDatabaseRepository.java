@@ -3,14 +3,12 @@ package pl.zajavka.infrastructure.database;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.stereotype.Repository;
 import pl.zajavka.business.OpinionRepository;
 import pl.zajavka.domain.Opinion;
-import pl.zajavka.domain.Purchase;
 import pl.zajavka.infrastructure.configuration.DatabaseConfiguration;
 
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class OpinionDatabaseRepository implements OpinionRepository {
 
+    private static final String SELECT_ALL = "SELECT * FROM OPINION";
     private static final String DELETE_ALL = "DELETE FROM OPINION WHERE 1=1";
     private static final String DELETE_ALL_WHERE_CUSTOMER_EMAIL =
             "DELETE FROM OPINION WHERE CUSTOMER_ID IN (SELECT ID FROM CUSTOMER WHERE EMAIL = :email)";
@@ -54,6 +53,12 @@ public class OpinionDatabaseRepository implements OpinionRepository {
     public void remove(String email) {
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
         jdbcTemplate.update(DELETE_ALL_WHERE_CUSTOMER_EMAIL, Map.of("email", email));
+    }
+
+    @Override
+    public List<Opinion> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapOpinion);
     }
 
     @Override

@@ -13,6 +13,7 @@ import pl.zajavka.business.CustomerRepository;
 import pl.zajavka.domain.Customer;
 import pl.zajavka.infrastructure.configuration.DatabaseConfiguration;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CustomerDatabaseRepository implements CustomerRepository {
 
+    private static final String SELECT_ALL = "SELECT * FROM CUSTOMER";
     private static final String SELECT_ONE_WHERE_EMAIL = "SELECT * FROM CUSTOMER WHERE EMAIL = :email";
     private static final String DELETE_ALL = "DELETE FROM CUSTOMER WHERE 1=1";
     private static final String DELETE_WHERE_CUSTOMER_EMAIL = "DELETE FROM CUSTOMER WHERE EMAIL = :email";
@@ -36,6 +38,12 @@ public class CustomerDatabaseRepository implements CustomerRepository {
 
         Number customerId = jdbcInsert.executeAndReturnKey(new BeanPropertySqlParameterSource(customer));
         return customer.withId((long) customerId.intValue());
+    }
+
+    @Override
+    public List<Customer> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapCustomer);
     }
 
     @Override
