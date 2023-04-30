@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.zajavka.domain.Opinion;
+import pl.zajavka.domain.Purchase;
 
 import java.util.List;
 import java.util.Map;
@@ -12,10 +13,17 @@ import java.util.Map;
 @AllArgsConstructor
 public class OpinionService {
 
+    private final PurchaseService purchaseService;
     private final OpinionRepository opinionRepository;
 
     @Transactional
     public Opinion create(Opinion opinion) {
+        List<Purchase> purchases = purchaseService.findAll(opinion.getCustomer().getEmail(), opinion.getProduct().getProductCode());
+
+        if(purchases.isEmpty()){
+            throw new RuntimeException("Customer: [%s] wants to give opinion for product: [%s] but there is no purchase"
+                    .formatted(opinion.getCustomer().getEmail(), opinion.getProduct().getProductCode()));
+        }
         return opinionRepository.create(opinion);
     }
 
