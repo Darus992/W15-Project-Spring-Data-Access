@@ -66,7 +66,7 @@ public class DatabaseMapper {
                 .customer(Customer.builder().id(resultSet.getLong("customer_id")).build())
                 .product(Product.builder().id(resultSet.getLong("product_id")).build())
                 .quantity(resultSet.getInt("quantity"))
-                .dateTime(OffsetDateTime.parse(resultSet.getString("date_time")))
+                .dateTime(OffsetDateTime.parse(resultSet.getString("date_time"), DATABASE_DATE_FORMAT).withOffsetSameInstant(ZoneOffset.UTC))
                 .build();
     }
 
@@ -78,7 +78,7 @@ public class DatabaseMapper {
                 .product(Product.builder().id(resultSet.getLong("product_id")).build())
                 .stars(resultSet.getByte("stars"))
                 .comment(resultSet.getString("comment"))
-                .dateTime(OffsetDateTime.parse(resultSet.getString("date_time")))
+                .dateTime(OffsetDateTime.parse(resultSet.getString("date_time"), DATABASE_DATE_FORMAT).withOffsetSameInstant(ZoneOffset.UTC))
                 .build();
     }
 }

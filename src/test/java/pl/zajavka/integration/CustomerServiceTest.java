@@ -11,6 +11,10 @@ import pl.zajavka.business.*;
 import pl.zajavka.domain.*;
 import pl.zajavka.infrastructure.configuration.ApplicationConfiguration;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.List;
+
 @SpringJUnitConfig(classes = ApplicationConfiguration.class)
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class CustomerServiceTest {
@@ -61,7 +65,46 @@ public class CustomerServiceTest {
 
     @Test
     @DisplayName("Exercise 4 part 2")
-    void thatPurchaseIsNotRemovedWhenCustomerRemovingFails(){
+    void thatPurchaseAndOpinionIsNotRemovedWhenCustomerRemovingFails(){
+        //  given
+        final Customer customer = customerService.create(StoreFixtures.someCustomer()
+                .withDateOfBirth(LocalDate.of(1950, 10, 5)));
+        final Producer producer = producerService.create(StoreFixtures.someProducer());
+        final Product product1 = productService.create(StoreFixtures.someProduct1(producer));
+        final Product product2 = productService.create(StoreFixtures.someProduct2(producer));
+        final Purchase purchase1 = purchaseService.create(StoreFixtures.somePurchase(customer, product1).withQuantity(1));
+        final Purchase purchase2 = purchaseService.create(StoreFixtures.somePurchase(customer, product2).withQuantity(3));
+        final Opinion opinion = opinionService.create(StoreFixtures.someOpinion(customer, product1));
 
+        Assertions.assertEquals(customer, customerService.find(customer.getEmail()));
+
+        //  when
+        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> customerService.remove(customer.getEmail()));
+        Assertions.assertEquals("Could not remove customer because he/she is older than 40, email: [%s]".formatted(customer.getEmail()),
+                exception.getMessage()
+        );
+
+        Assertions.assertEquals(customer, customerService.find(customer.getEmail()));
+        Assertions.assertEquals(
+                List.of(
+                        purchase1
+                                .withCustomer(Customer.builder().id(customer.getId()).build())
+                                .withProduct(Product.builder().id(product1.getId()).build())
+                                .withDateTime(purchase1.getDateTime().withOffsetSameInstant(ZoneOffset.UTC)),
+                        purchase2
+                                .withCustomer(Customer.builder().id(customer.getId()).build())
+                                .withProduct(Product.builder().id(product2.getId()).build())
+                                .withDateTime(purchase2.getDateTime().withOffsetSameInstant(ZoneOffset.UTC))
+                ),
+                purchaseService.findAll(customer.getEmail())
+        );
+        Assertions.assertEquals(
+                List.of(opinion
+                        .withCustomer(Customer.builder().id(customer.getId()).build())
+                        .withProduct(Product.builder().id(product1.getId()).build())
+                        .withDateTime(opinion.getDateTime().withOffsetSameInstant(ZoneOffset.UTC))
+                ),
+                opinionService.findAll(customer.getEmail())
+        );
     }
 }
