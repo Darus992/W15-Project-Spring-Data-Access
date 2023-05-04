@@ -52,4 +52,14 @@ public class CustomerService {
     public List<Customer> findAll() {
         return customerRepository.findAll();
     }
+
+    @Transactional
+    public void removeUnwantedCustomers() {
+        List<Customer> customers = customerRepository.findAll().stream()
+                .filter(customer -> !isOlderThan40(customer))
+                .filter(customer -> opinionService.customerGivesUnwantedOpinions(customer.getEmail()))
+                .toList();
+
+        customers.forEach(customer -> remove(customer.getEmail()));
+    }
 }
