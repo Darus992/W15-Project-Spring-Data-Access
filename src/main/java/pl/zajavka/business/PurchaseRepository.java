@@ -7,13 +7,17 @@ import java.util.List;
 public interface PurchaseRepository {
     Purchase create(Purchase purchase);
 
-    void removeAll();
-
-    void remove(String email);
-
     List<Purchase> findAll();
 
     List<Purchase> findAll(String email);
 
     List<Purchase> findAll(String email, String productCode);
+
+    List<Purchase> findAllByProductCode(String productCode);
+
+    void remove(String email);
+
+    void removeAll();
+
+    void removeAllByProductCode(String productCode);
 }

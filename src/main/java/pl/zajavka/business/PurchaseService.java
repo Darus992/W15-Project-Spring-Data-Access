@@ -20,16 +20,6 @@ public class PurchaseService {
         return purchaseRepository.create(purchase);
     }
 
-    @Transactional
-    public void removeAll() {
-        purchaseRepository.removeAll();
-    }
-
-    @Transactional
-    public void removeAll(String email) {
-        purchaseRepository.remove(email);
-    }
-
     public List<Purchase> findAll() {
         return purchaseRepository.findAll();
     }
@@ -40,5 +30,23 @@ public class PurchaseService {
 
     public List<Purchase> findAll(String email, String productCode) {
         return purchaseRepository.findAll(email, productCode);
+    }
+
+    public List<Purchase> findAllByProductCode(String productCode) {
+        return purchaseRepository.findAllByProductCode(productCode);
+    }
+
+    @Transactional
+    public void removeAll() {
+        purchaseRepository.removeAll();
+    }
+
+    @Transactional
+    public void removeAll(String email) {
+        purchaseRepository.remove(email);
+    }
+
+    public void removeAllByProductCode(String productCode) {
+        purchaseRepository.removeAllByProductCode(productCode);
     }
 }

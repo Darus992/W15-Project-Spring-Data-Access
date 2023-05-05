@@ -8,11 +8,11 @@ import java.util.Optional;
 public interface CustomerRepository {
     Customer create(Customer customer);
 
-    List<Customer> findAll();
-
     Optional<Customer> find(String email);
 
-    void removeAll();
+    List<Customer> findAll();
 
     void remove(String email);
+
+    void removeAll();
 }

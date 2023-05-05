@@ -20,13 +20,13 @@ public class ProducerService {
         return producerRepository.create(producer);
     }
 
+    public List<Producer> findAll() {
+        return producerRepository.findAll();
+    }
+
     @Transactional
     public void removeAll(){
         productService.removeAll();
         producerRepository.removeAll();
-    }
-
-    public List<Producer> findAll() {
-        return producerRepository.findAll();
     }
 }

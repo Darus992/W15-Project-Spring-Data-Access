@@ -27,6 +27,22 @@ public class OpinionService {
         return opinionRepository.create(opinion);
     }
 
+    public List<Opinion> findAll() {
+        return opinionRepository.findAll();
+    }
+
+    public List<Opinion> findAll(String email) {
+        return opinionRepository.findAll(email);
+    }
+
+    public List<Opinion> findAllByProductCode(String productCode) {
+        return opinionRepository.findAllByProductCode(productCode);
+    }
+
+    public List<Opinion> findUnwantedOpinions() {
+        return opinionRepository.findUnwantedOpinions();
+    }
+
     @Transactional
     public void removeAll() {
         opinionRepository.removeAll();
@@ -37,15 +53,8 @@ public class OpinionService {
         opinionRepository.remove(email);
     }
 
-    public List<Opinion> findAll() {
-        return opinionRepository.findAll();
-    }
-    public List<Opinion> findAll(String email) {
-        return opinionRepository.findAll(email);
-    }
-
-    public List<Opinion> findUnwantedOpinions() {
-        return opinionRepository.findUnwantedOpinions();
+    public void removeAllByProductCode(String productCode) {
+        opinionRepository.removeAllByProductCode(productCode);
     }
 
     @Transactional

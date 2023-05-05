@@ -21,8 +21,9 @@ import java.util.Optional;
 public class ProductDatabaseRepository implements ProductRepository {
 
     private static final String SELECT_ALL = "SELECT * FROM PRODUCT";
-    private static final String DELETE_ALL = "DELETE FROM PRODUCT WHERE 1=1";
     private static final String SELECT_WHERE_PRODUCT_CODE = "SELECT * FROM PRODUCT WHERE PRODUCT_CODE = :productCode";
+    private static final String DELETE_ALL = "DELETE FROM PRODUCT WHERE 1=1";
+    private static final String DELETE_WHERE_PRODUCT_CODE = "DELETE FROM PRODUCT WHERE PRODUCT_CODE = :productCode";
     private final SimpleDriverDataSource simpleDriverDataSource;
     private final DatabaseMapper databaseMapper;
 
@@ -38,12 +39,6 @@ public class ProductDatabaseRepository implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAll() {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
-        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapProduct);
-    }
-
-    @Override
     public Optional<Product> find(String productCode) {
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
         Map<String, Object> params = Map.of("productCode", productCode);
@@ -53,6 +48,18 @@ public class ProductDatabaseRepository implements ProductRepository {
         }catch (Exception e){
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Product> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapProduct);
+    }
+
+    @Override
+    public void remove(String productCode) {
+        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
+        jdbcTemplate.update(DELETE_WHERE_PRODUCT_CODE, Map.of("productCode", productCode));
     }
 
     @Override

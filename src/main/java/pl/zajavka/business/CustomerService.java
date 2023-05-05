@@ -21,16 +21,13 @@ public class CustomerService {
         return customerRepository.create(customer);
     }
 
-    @Transactional
-    public void removeAll(){
-        opinionService.removeAll();
-        purchaseService.removeAll();
-        customerRepository.removeAll();
-    }
-
     public Customer find(String email) {
         return customerRepository.find(email)
                 .orElseThrow(() -> new RuntimeException("Customer with email: [%s] is missing".formatted(email)));
+    }
+
+    public List<Customer> findAll() {
+        return customerRepository.findAll();
     }
 
     @Transactional
@@ -45,12 +42,11 @@ public class CustomerService {
         customerRepository.remove(email);
     }
 
-    private boolean isOlderThan40(Customer existingCustomer) {
-        return LocalDate.now().getYear() - existingCustomer.getDateOfBirth().getYear() > 40;
-    }
-
-    public List<Customer> findAll() {
-        return customerRepository.findAll();
+    @Transactional
+    public void removeAll(){
+        opinionService.removeAll();
+        purchaseService.removeAll();
+        customerRepository.removeAll();
     }
 
     @Transactional
@@ -61,5 +57,9 @@ public class CustomerService {
                 .toList();
 
         customers.forEach(customer -> remove(customer.getEmail()));
+    }
+
+    private boolean isOlderThan40(Customer existingCustomer) {
+        return LocalDate.now().getYear() - existingCustomer.getDateOfBirth().getYear() > 40;
     }
 }

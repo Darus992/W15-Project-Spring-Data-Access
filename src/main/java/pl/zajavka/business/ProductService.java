@@ -12,6 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductService {
 
+    private OpinionService opinionService;
+    private PurchaseService purchaseService;
     private final ProductRepository productRepository;
 
     @Transactional
@@ -19,17 +21,24 @@ public class ProductService {
         return productRepository.create(product);
     }
 
-    @Transactional
-    public void removeAll(){
-        productRepository.removeAll();
+    public Product find(String productCode) {
+        return productRepository.find(productCode)
+                .orElseThrow(() -> new RuntimeException("Product with product code: [%s] is missing".formatted(productCode)));
     }
 
     public List<Product> findAll() {
         return productRepository.findAll();
     }
 
-    public Product find(String productCode) {
-        return productRepository.find(productCode)
-                .orElseThrow(() -> new RuntimeException("Product with product code: [%s] is missing".formatted(productCode)));
+    @Transactional
+    public void removeAll(){
+        productRepository.removeAll();
+    }
+
+    @Transactional
+    public void removeCompletely(String productCode) {
+        purchaseService.removeAllByProductCode(productCode);
+        opinionService.removeAllByProductCode(productCode);
+        productRepository.remove(productCode);
     }
 }

@@ -41,12 +41,6 @@ public class CustomerDatabaseRepository implements CustomerRepository {
     }
 
     @Override
-    public List<Customer> findAll() {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
-        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapCustomer);
-    }
-
-    @Override
     public Optional<Customer> find(String email) {
 
         final var jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
@@ -63,13 +57,19 @@ public class CustomerDatabaseRepository implements CustomerRepository {
     }
 
     @Override
-    public void removeAll() {
-        new JdbcTemplate(simpleDriverDataSource).update(DELETE_ALL);
+    public List<Customer> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapCustomer);
     }
 
     @Override
     public void remove(String email) {
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
         jdbcTemplate.update(DELETE_WHERE_CUSTOMER_EMAIL, Map.of("email", email));
+    }
+
+    @Override
+    public void removeAll() {
+        new JdbcTemplate(simpleDriverDataSource).update(DELETE_ALL);
     }
 }
