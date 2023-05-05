@@ -27,4 +27,9 @@ public class ProductService {
     public List<Product> findAll() {
         return productRepository.findAll();
     }
+
+    public Product find(String productCode) {
+        return productRepository.find(productCode)
+                .orElseThrow(() -> new RuntimeException("Product with product code: [%s] is missing".formatted(productCode)));
+    }
 }
